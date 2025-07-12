@@ -31,7 +31,7 @@ void PhysicalDesign::loadLibrary(const LefDscp & library) {
 			<< "Please call first initPhysicalDesign!"
 			<< std::endl;
 		return;
-	} // end if 
+	} // end if
 
 	if (library.clsLefUnitsDscp.clsHasDatabase) {
 		if (getDatabaseUnits(LIBRARY_DBU) == 0) {
@@ -45,9 +45,9 @@ void PhysicalDesign::loadLibrary(const LefDscp & library) {
 					<< ".\n";
 				std::cout << "WARNING: Lef library elements were NOT initialized!\n";
 				return;
-			} // end if 
+			} // end if
 		} // end if-else
-	} // end if 
+	} // end if
 
 	// Initializing physical sites
 	data->clsPhysicalSites.reserve(library.clsLefSiteDscps.size());
@@ -60,13 +60,13 @@ void PhysicalDesign::loadLibrary(const LefDscp & library) {
 	Rsyn::PhysicalLayerData * lower = nullptr;
 	for (const LefLayerDscp & lefLayer : library.clsLefLayerDscps) {
 		lower = addPhysicalLayer(lefLayer, lower);
-	} // end for 
+	} // end for
 
 	// Initializing physical vias
 	data->clsPhysicalVias.reserve(library.clsLefViaDscps.size());
 	for (const LefViaDscp & via : library.clsLefViaDscps) {
 		addPhysicalVia(via);
-	} // end for 
+	} // end for
 
 	// Initialize rule and generate physical vias
 	const int numViaRules = library.clsLefViaRuleDscps.size();
@@ -75,14 +75,14 @@ void PhysicalDesign::loadLibrary(const LefDscp & library) {
 	data->clsPhysicalViaRuleGenerates.reserve(numViaRules);
 	for (const LefViaRuleDscp & viaRuleDscp : library.clsLefViaRuleDscps) {
 		addPhysicalViaRule(viaRuleDscp);
-	} // end for 
+	} // end for
 	data->clsPhysicalViaRules.shrink_to_fit();
 	data->clsPhysicalViaRuleGenerates.shrink_to_fit();
 
-	// initializing physical spacing 
+	// initializing physical spacing
 	for (const LefSpacingDscp & spc : library.clsLefSpacingDscps) {
 		addPhysicalSpacing(spc);
-	} // end for 
+	} // end for
 
 	// initializing physical cells (LEF macros)
 	for (const LefMacroDscp & macro : library.clsLefMacroDscps) {
@@ -92,10 +92,10 @@ void PhysicalDesign::loadLibrary(const LefDscp & library) {
 		// Adding Physical Library pins to Physical Layer
 		for (const LefPinDscp &lpin : macro.clsPins) {
 			addPhysicalLibraryPin(libCell, lpin);
-		} // end for	
+		} // end for
 	} // end for
 
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -114,9 +114,9 @@ void PhysicalDesign::loadDesign(const DefDscp & design) {
 		std::cout << "ERROR: Invalid DEF database units " << getDatabaseUnits(DESIGN_DBU) << " (LEF database units: " << getDatabaseUnits(LIBRARY_DBU) << ").\n";
 		std::cout << "DEF design units should be lower or equal to LEF design units and must have a integer multiple. Physical design was not initialized!\n";
 		return;
-	} // end if 
+	} // end if
 
-	// This operation always results in an integer number factor. 
+	// This operation always results in an integer number factor.
 	// LEF/DEF specifications prohibit division that results in a real number factor.
 	data->clsDBUs[MULT_FACTOR_DBU] = getDatabaseUnits(LIBRARY_DBU) / getDatabaseUnits(DESIGN_DBU);
 
@@ -125,7 +125,7 @@ void PhysicalDesign::loadDesign(const DefDscp & design) {
 	data->clsPhysicalVias.reserve(numVias);
 	for (const DefViaDscp & via : design.clsVias) {
 		addPhysicalDesignVia(via);
-	} // end for 
+	} // end for
 
 	// initializing physical cells (DEF Components)
 	for (const DefComponentDscp & component : design.clsComps) {
@@ -155,7 +155,7 @@ void PhysicalDesign::loadDesign(const DefDscp & design) {
 	data->clsPhysicalRows.reserve(design.clsRows.size()); // reserving space for rows
 	for (const DefRowDscp & defRow : design.clsRows) {
 		addPhysicalRow(defRow);
-	} // end for 
+	} // end for
 
 	data->clsMapPhysicalRegions.reserve(design.clsRegions.size());
 	data->clsPhysicalRegions.reserve(design.clsRegions.size());
@@ -186,7 +186,7 @@ void PhysicalDesign::loadDesign(const DefDscp & design) {
 	std::cout << "\tName: " << data->clsDesign.getName() << "\n";
 	std::cout << "\t#Moveable Insts: " << getNumElements(PhysicalType::PHYSICAL_MOVABLE) << "\n";
 	std::cout << "\t#Fixed Insts: " << getNumElements(PhysicalType::PHYSICAL_FIXED) << "\n";
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -202,7 +202,7 @@ void PhysicalDesign::initPhysicalDesign(Rsyn::Design dsg, const Rsyn::Json &para
 		data->clsEnableMergeRectangles = params.value("clsEnableMergeRectangles", data->clsEnableMergeRectangles);
 		data->clsEnableNetPinBoundaries = params.value("clsEnableNetPinBoundaries", data->clsEnableNetPinBoundaries);
 		data->clsMode = getPhysicalDesignModeType(params.value("clsPhysicalDesignMode", "ALL"));
-	} // end if 
+	} // end if
 
 	data->clsDesign = dsg;
 	data->clsModule = dsg.getTopModule();
@@ -216,7 +216,7 @@ void PhysicalDesign::initPhysicalDesign(Rsyn::Design dsg, const Rsyn::Json &para
 	// Initialize data of top module.
 	PhysicalInstanceData &phTopModule = data->clsPhysicalInstances[dsg.getTopModule()];
 	phTopModule.clsInstance = dsg.getTopModule();
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -224,7 +224,7 @@ void PhysicalDesign::updateAllNetBounds(const bool skipClockNet) {
 	if (skipClockNet && data->clsClkNet) {
 		Rsyn::PhysicalNet phNet = getPhysicalNet(data->clsClkNet);
 		data->clsHPWL -= phNet.getHPWL();
-	} // end if 
+	} // end if
 
 	for (Rsyn::Net net : data->clsModule.allNets()) {
 		//skipping clock network
@@ -233,7 +233,7 @@ void PhysicalDesign::updateAllNetBounds(const bool skipClockNet) {
 
 		updateNetBound(net);
 	} // end for
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -256,31 +256,31 @@ void PhysicalDesign::updateNetBound(Rsyn::Net net) {
 			bound[UPPER][X] = pos[X];
 			if (updatePinBound)
 				phNet.clsBoundPins[UPPER][X] = pin;
-		} // end if 
+		} // end if
 
-		// lower x corner pos 
+		// lower x corner pos
 		if (pos[X] <= bound[LOWER][X]) {
 			bound[LOWER][X] = pos[X];
 			if (updatePinBound)
 				phNet.clsBoundPins[LOWER][X] = pin;
-		} // end if 
+		} // end if
 
-		// upper y corner pos 
+		// upper y corner pos
 		if (pos[Y] >= bound[UPPER][Y]) {
 			bound[UPPER][Y] = pos[Y];
 			if (updatePinBound)
 				phNet.clsBoundPins[UPPER][Y] = pin;
-		} // end if 
+		} // end if
 
-		// lower y corner pos 
+		// lower y corner pos
 		if (pos[Y] <= bound[LOWER][Y]) {
 			bound[LOWER][Y] = pos[Y];
 			if (updatePinBound)
 				phNet.clsBoundPins[LOWER][Y] = pin;
-		} // end if 
+		} // end if
 	} // end for
-	data->clsHPWL += bound.computeLength(); // update hpwl 
-} // end method 
+	data->clsHPWL += bound.computeLength(); // update hpwl
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -291,7 +291,7 @@ void PhysicalDesign::addPhysicalSite(const LefSiteDscp & site) {
 	if (it != data->clsMapPhysicalSites.end()) {
 		std::cout << "WARNING: Site " << site.clsName << " was already defined. Skipping ...\n";
 		return;
-	} // end if 
+	} // end if
 
 	// Adding new lib site
 	data->clsPhysicalSites.push_back(PhysicalSite(new PhysicalSiteData()));
@@ -305,7 +305,7 @@ void PhysicalDesign::addPhysicalSite(const LefSiteDscp & site) {
 	phSite->clsSize[Y] = static_cast<DBU> (std::round(size[Y]));
 	phSite->clsSiteClass = Rsyn::getPhysicalSiteClass(site.clsSiteClass);
 	phSite->clsSymmetry = Rsyn::getPhysicalSymmetry(site.clsSymmetry);
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -315,7 +315,7 @@ Rsyn::PhysicalLayerData * PhysicalDesign::addPhysicalLayer(const LefLayerDscp& l
 		std::cout << "WARNING: Layer " << layer.clsName << " was already defined. Skipping ...\n";
 		// TODO -> return the pointer to the phLayerData of already defined physical layer.
 		return nullptr;
-	} // end if 
+	} // end if
 
 	DBU libDBU = getDatabaseUnits(LIBRARY_DBU);
 	Element<PhysicalLayerData> *element = data->clsPhysicalLayers.create();
@@ -333,7 +333,7 @@ Rsyn::PhysicalLayerData * PhysicalDesign::addPhysicalLayer(const LefLayerDscp& l
 		spc.data->clsEOL = static_cast<DBU> (std::round(spcRule.clsEOL * libDBU));
 		spc.data->clsSpacing = static_cast<DBU> (std::round(spcRule.clsSpacing * libDBU));
 		spc.data->clsEOLWithin = static_cast<DBU> (std::round(spcRule.clsEOLWithin * libDBU));
-	} // end for 
+	} // end for
 	phLayer->clsMinWidth = static_cast<DBU> (std::round(layer.clsMinWidth * libDBU));
 	phLayer->clsArea = static_cast<DBU> (std::round(layer.clsArea * libDBU * libDBU));
 	phLayer->clsWidth = static_cast<DBU> (std::round(layer.clsWidth * libDBU));
@@ -347,7 +347,7 @@ Rsyn::PhysicalLayerData * PhysicalDesign::addPhysicalLayer(const LefLayerDscp& l
 	if (phLayer->clsType == Rsyn::PhysicalLayerType::ROUTING)
 		data->clsPhysicalRoutingLayerIndeces.push_back(phLayer->id);
 	return phLayer;
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -356,7 +356,7 @@ void PhysicalDesign::addPhysicalVia(const LefViaDscp & via) {
 	if (it != data->clsMapPhysicalVias.end()) {
 		std::cout << "WARNING: Via " << via.clsName << " was already defined. Skipping ...\n";
 		return;
-	} // end if 
+	} // end if
 
 	// Adding new via
 	data->clsMapPhysicalVias[via.clsName] = data->clsPhysicalVias.size();
@@ -391,24 +391,24 @@ void PhysicalDesign::addPhysicalVia(const LefViaDscp & via) {
 			phVia->clsHasRowCol = true;
 			phVia->clsNumRows = via.clsNumCutRows;
 			phVia->clsNumCols = via.clsNumCutCols;
-		} // end if 
+		} // end if
 		if (via.clsHasOrigin) {
 			phVia->clsHasOrigin = true;
 			phVia->clsOrigin[X] = convertMicronToLibraryDatabaseUnits(via.clsXOrigin);
 			phVia->clsOrigin[Y] = convertMicronToLibraryDatabaseUnits(via.clsYOrigin);
-		} // end if 
+		} // end if
 		if (via.clsHasOffset) {
 			phVia->clsHasOffset = true;
 			phVia->clsOffset[BOTTOM_VIA_LEVEL][X] = convertMicronToLibraryDatabaseUnits(via.clsXBottomOffset);
 			phVia->clsOffset[TOP_VIA_LEVEL][Y] = convertMicronToLibraryDatabaseUnits(via.clsYBottomOffset);
 			phVia->clsOffset[BOTTOM_VIA_LEVEL][X] = convertMicronToLibraryDatabaseUnits(via.clsXTopOffset);
 			phVia->clsOffset[TOP_VIA_LEVEL][Y] = convertMicronToLibraryDatabaseUnits(via.clsYTopOffset);
-		} // end if 
+		} // end if
 	} else {
 		if (via.clsHasResistance) {
 			phVia->clsHasCutResistance = true;
 			phVia->clsCutResistance = via.clsCutResistance;
-		} // end if 
+		} // end if
 
 		std::vector<std::tuple<int, PhysicalLayerData *>> layers;
 		for (const std::pair < std::string, std::deque < LefViaGeometryDscp>> &geoPair : via.clsGeometries) {
@@ -416,7 +416,7 @@ void PhysicalDesign::addPhysicalVia(const LefViaDscp & via) {
 			Rsyn::PhysicalLayer layer = getPhysicalLayerByName(layerName);
 			assert(layer);
 			layers.push_back(std::make_tuple(layer.getIndex(), layer.data));
-		} // end for 
+		} // end for
 		std::sort(layers.begin(), layers.end());
 		//	assert(layers.size() == NUM_VIA_LAYERS);
 		for (int i = 0; i < NUM_VIA_LAYERS; i++) {
@@ -436,10 +436,10 @@ void PhysicalDesign::addPhysicalVia(const LefViaDscp & via) {
 				bds[LOWER][Y] = convertMicronToLibraryDatabaseUnits(doubleRect[LOWER][Y]);
 				bds[UPPER][X] = convertMicronToLibraryDatabaseUnits(doubleRect[UPPER][X]);
 				bds[UPPER][Y] = convertMicronToLibraryDatabaseUnits(doubleRect[UPPER][Y]);
-			} // end for 
+			} // end for
 		} // end for
-	} // end if-else 
-} // end method 
+	} // end if-else
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -448,7 +448,7 @@ void PhysicalDesign::addPhysicalViaRule(const LefViaRuleDscp & via) {
 	if (it != data->clsMapPhysicalViaRuleBases.end()) {
 		std::cout << "WARNING: Via Rule " << via.clsName << " was already defined. Skipping ...\n";
 		return;
-	} // end if 
+	} // end if
 
 	// Adding new lib site
 	data->clsMapPhysicalViaRuleBases[via.clsName] = data->clsPhysicalViaRuleBases.size();
@@ -469,8 +469,8 @@ void PhysicalDesign::addPhysicalViaRule(const LefViaRuleDscp & via) {
 			cutLayerId = i;
 		} else {
 			layerIds.insert(i);
-		} // end if 
-	} // end for 
+		} // end if
+	} // end for
 
 	// Routing layers
 	const LefViaRuleLayerDscp & viaLayerDscp0 = via.clsLayers[*layerIds.begin()];
@@ -487,18 +487,18 @@ void PhysicalDesign::addPhysicalViaRule(const LefViaRuleDscp & via) {
 		layerLevel0 = TOP_VIA_LEVEL;
 		layerType1 = BOTTOM_VIA_LAYER;
 		layerLevel1 = BOTTOM_VIA_LEVEL;
-	} // end if 
+	} // end if
 
 	if (viaLayerDscp0.clsHasWidth) {
 		phViaRuleBase->clsHasWidth[layerLevel0] = true;
 		phViaRuleBase->clsWidth[layerLevel0][ViaRange::VIA_RANGE_MIN] = convertMicronToLibraryDatabaseUnits(viaLayerDscp0.clsMinWidth);
 		phViaRuleBase->clsWidth[layerLevel0][ViaRange::VIA_RANGE_MAX] = convertMicronToLibraryDatabaseUnits(viaLayerDscp0.clsMaxWidth);
-	} // end if 
+	} // end if
 	if (viaLayerDscp1.clsHasWidth) {
 		phViaRuleBase->clsHasWidth[layerLevel1] = true;
 		phViaRuleBase->clsWidth[layerLevel1][ViaRange::VIA_RANGE_MIN] = convertMicronToLibraryDatabaseUnits(viaLayerDscp1.clsMinWidth);
 		phViaRuleBase->clsWidth[layerLevel1][ViaRange::VIA_RANGE_MAX] = convertMicronToLibraryDatabaseUnits(viaLayerDscp1.clsMaxWidth);
-	} // end if 
+	} // end if
 
 
 	if (!via.clsIsGenerate) {
@@ -518,10 +518,10 @@ void PhysicalDesign::addPhysicalViaRule(const LefViaRuleDscp & via) {
 				if (phVia == nullptr) {
 					std::cout << "Via " << viaName << " is not defined in library. Skipping ...\n";
 					continue;
-				} // end if 
+				} // end if
 				phViaRuleBase->clsVias.push_back(phVia);
-			} // end for 
-		} // end if 
+			} // end for
+		} // end if
 	} else {
 		phViaRuleBase->clsIsGenerate = true;
 		phViaRuleBase->clsIsDefault = via.clsIsDefault;
@@ -544,7 +544,7 @@ void PhysicalDesign::addPhysicalViaRule(const LefViaRuleDscp & via) {
 		if (cutLayerDscp.clsHasResistance) {
 			phViaRuleBase->clsHasCutResistance = true;
 			phViaRuleBase->clsCutResistance = cutLayerDscp.clsCutResistance;
-		} // end if 
+		} // end if
 
 
 		phViaRuleBase->clsLayers[layerType0] = layer0.data;
@@ -553,8 +553,8 @@ void PhysicalDesign::addPhysicalViaRule(const LefViaRuleDscp & via) {
 		phViaRuleBase->clsEnclosure1[layerLevel1] = convertMicronToLibraryDatabaseUnits(viaLayerDscp1.clsEnclosure1);
 		phViaRuleBase->clsEnclosure2[layerLevel0] = convertMicronToLibraryDatabaseUnits(viaLayerDscp0.clsEnclosure2);
 		phViaRuleBase->clsEnclosure2[layerLevel1] = convertMicronToLibraryDatabaseUnits(viaLayerDscp1.clsEnclosure2);
-	} // end if-else 
-} // end method 
+	} // end if-else
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -602,10 +602,10 @@ Rsyn::LibraryCell PhysicalDesign::addPhysicalLibraryCell(const LefMacroDscp& mac
 			for (Bounds & rect : bounds) {
 				//rect.scaleCoordinates(data->clsDesignUnits);
 				phObs->clsBounds.push_back(rect);
-			} // end for 
+			} // end for
 		} else {
 			phObs->clsBounds = scaledBounds;
-		} // end if-else 
+		} // end if-else
 		phObs->clsLayer = getPhysicalLayerByName(libObs.clsMetalLayer);
 
 		// Mateus - 2018/03/11 - Defensive programming to avoid crashes in ICCAD15 benchmarks.
@@ -616,7 +616,7 @@ Rsyn::LibraryCell PhysicalDesign::addPhysicalLibraryCell(const LefMacroDscp& mac
 		// Hard code. After implementing mapping structure in Rsyn, remove this line.
 		if (libObs.clsMetalLayer.compare("metal1") == 0) {
 			phlCell.clsLayerBoundIndex = phlCell.clsObs.size() - 1;
-		} // end if 
+		} // end if
 		Rsyn::PhysicalObstacle topPhObs = phlCell.clsTopLayerObs;
 		if (topPhObs != nullptr) {
 			if (topPhObs.getLayer().getIndex() < phObs->clsLayer.getIndex())
@@ -647,26 +647,26 @@ Rsyn::LibraryCell PhysicalDesign::addPhysicalLibraryCell(const LefMacroDscp& mac
 					phlCell.clsPolygonBounds.addPoint(lower[X], lowPt[Y]);
 					lower = lowPt;
 					phlCell.clsPolygonBounds.addPoint(lower[X], lower[Y]);
-				} // end if 
+				} // end if
 				if (uppPt[X] != upper[X]) {
 					upperPoints.push_front(DBUxy(upper[X], lowPt[Y]));
 					upper = uppPt;
 					upper[Y] = lowPt[Y];
 					upperPoints.push_front(upper);
-				} // en if 
-			} // end for 
+				} // en if
+			} // end for
 			upperPoints.push_front(phObs.allBounds().back()[UPPER]);
 			phlCell.clsPolygonBounds.addPoint(phObs.allBounds().back()[LOWER][X],
 				phObs.allBounds().back()[UPPER][Y]);
 
 			for (DBUxy point : upperPoints) {
 				phlCell.clsPolygonBounds.addPoint(point[X], point[Y]);
-			} // end for 
-		} // end if 
+			} // end for
+		} // end if
 	} // end if
 
 	return lCell;
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -714,7 +714,7 @@ void PhysicalDesign::addPhysicalLibraryPin(Rsyn::LibraryCell libCell, const LefP
 					phyPin.clsLayerBound[UPPER][X] = std::max(phyPin.clsLayerBound[UPPER][X], bds[UPPER][X]);
 					phyPin.clsLayerBound[UPPER][Y] = std::max(phyPin.clsLayerBound[UPPER][Y], bds[UPPER][Y]);
 				} // end for
-			} // end if 
+			} // end if
 			if (!lefPortGeo.clsLefPolygonDscp.empty()) {
 				phyPin.clsLayerBound[LOWER] = DBUxy(std::numeric_limits<DBU>::max(), std::numeric_limits<DBU>::max());
 				phyPin.clsLayerBound[UPPER] = DBUxy(std::numeric_limits<DBU>::min(), std::numeric_limits<DBU>::min());
@@ -732,19 +732,19 @@ void PhysicalDesign::addPhysicalLibraryPin(Rsyn::LibraryCell libCell, const LefP
 						phyPin.clsLayerBound[UPPER][X] = std::max(phyPin.clsLayerBound[UPPER][X], pt[X]);
 						phyPin.clsLayerBound[UPPER][Y] = std::max(phyPin.clsLayerBound[UPPER][Y], pt[Y]);
 					} // end for
-				} // end for 
-			} // end if 
-		} //  end for 
+				} // end for
+			} // end if
+		} //  end for
 		if (phPinPort.getNumPinLayers() > 1) {
 			std::sort(phPinPort->clsPinLayers.begin(), phPinPort->clsPinLayers.end(),
 				[](PhysicalPinLayer phPinLayer0, PhysicalPinLayer phPinLayer1) {
 					Rsyn::PhysicalLayer phLayer0 = phPinLayer0.getLayer();
 					Rsyn::PhysicalLayer phLayer1 = phPinLayer1.getLayer();
 					return phLayer0.getIndex() < phLayer1.getIndex();
-				}); // end sort 
-		} // end if 
-	} // end for 
-} // end method 
+				}); // end sort
+		} // end if
+	} // end for
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -764,7 +764,7 @@ void PhysicalDesign::addPhysicalCell(Rsyn::Instance cell, const DefComponentDscp
 			data->clsNumElements[PHYSICAL_FIXEDBOUNDS]++;
 		} // end if-else
 		data->clsNumElements[PHYSICAL_FIXED]++;
-	} // end if 
+	} // end if
 	physicalCell.clsPlaced = component.clsIsPlaced;
 	physicalCell.clsBlock = phLibCell.clsMacroClass == Rsyn::MACRO_BLOCK;
 	if (physicalCell.clsBlock)
@@ -793,8 +793,8 @@ void PhysicalDesign::addPhysicalCell(Rsyn::Instance cell, const DefComponentDscp
 			data->clsTotalAreas[PHYSICAL_FIXED] += area;
 	} else {
 		data->clsTotalAreas[PHYSICAL_MOVABLE] += area;
-	} // end if-else 
-} // end method 
+	} // end if-else
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -810,7 +810,7 @@ void PhysicalDesign::addPhysicalPort(Rsyn::Instance cell, const DefPortDscp& por
 	// TODO Getting from port descriptor if it is fixed.
 	tag.setFixed(true);
 	tag.setMacroBlock(false);
-} // end method  
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -839,7 +839,7 @@ void PhysicalDesign::addPhysicalRow(const DefRowDscp& defRow) {
 	bounds[LOWER] = min(bounds[LOWER], phRowData->clsBounds[LOWER]);
 	bounds[UPPER] = max(bounds[UPPER], phRowData->clsBounds[UPPER]);
 	data->clsTotalAreas[PHYSICAL_PLACEABLE] += phRowData->clsBounds.computeArea();
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -851,7 +851,7 @@ void PhysicalDesign::addPhysicalRegion(const DefRegionDscp& defRegion) {
 	phRegion->clsType = Rsyn::getPhysicalRegionType(defRegion.clsType);
 	phRegion->clsBounds = defRegion.clsBounds;
 	data->clsMapPhysicalRegions[defRegion.clsName] = phRegion->id;
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -863,7 +863,7 @@ void PhysicalDesign::addPhysicalGroup(const DefGroupDscp& defGroup) {
 	phGroup->clsPatterns = defGroup.clsPatterns;
 	phGroup->clsRegion = getPhysicalRegionByName(defGroup.clsRegion);
 	data->clsMapPhysicalGroups[defGroup.clsName] = phGroup->id;
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -887,12 +887,12 @@ void PhysicalDesign::addPhysicalNet(const DefNetDscp & netDscp) {
 					DBUxy pos = segmentDscp.clsRoutingPoints.back().clsPos;
 					Rsyn::PhysicalVia physicalVia = getPhysicalViaByName(point.clsViaName);
 					routing.addVia(physicalVia, pos);
-				} // end if-else 
+				} // end if-else
 				if (numPoints > 1) {
 					wire.addRoutingPoint(point.clsPos);
-				} // end if 
-			} // end for 
-			// it is a wire 
+				} // end if
+			} // end for
+			// it is a wire
 			if (numPoints > 1) {
 				wire.setLayer(physicalLayer);
 				const DefRoutingPointDscp & source = segmentDscp.clsRoutingPoints.front();
@@ -905,15 +905,19 @@ void PhysicalDesign::addPhysicalNet(const DefNetDscp & netDscp) {
 					wire.setWidth(segmentDscp.clsRoutedWidth);
 				} // end if
 				routing.addWire(wire);
-			} // end if 
+			} // end if
 		} // end for
 	} // end for
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
 void PhysicalDesign::addPhysicalSpecialNet(const DefSpecialNetDscp & specialNet) {
 	Rsyn::Net net = data->clsDesign.findNetByName(specialNet.clsName);
+	if (net == nullptr) {
+		std::cout << "WARNING: Net " << specialNet.clsName << " was not found. Skipping ...\n";
+		return;
+	} // end if
 	PhysicalNetData & netData = data->clsPhysicalNets[net];
 	Rsyn::PhysicalRouting & routing = netData.clsRouting;
 	netData.clsNet = net;
@@ -932,12 +936,12 @@ void PhysicalDesign::addPhysicalSpecialNet(const DefSpecialNetDscp & specialNet)
 					DBUxy pos = segmentDscp.clsRoutingPoints.back().clsPos;
 					Rsyn::PhysicalVia physicalVia = getPhysicalViaByName(point.clsViaName);
 					routing.addVia(physicalVia, pos);
-				} // end if-else 
+				} // end if-else
 				if (numPoints > 1) {
 					wire.addRoutingPoint(point.clsPos);
-				} // end if 
-			} // end for 
-			// it is a wire 
+				} // end if
+			} // end for
+			// it is a wire
 			if (numPoints > 1) {
 				wire.setLayer(physicalLayer);
 				const DefRoutingPointDscp & source = segmentDscp.clsRoutingPoints.front();
@@ -950,10 +954,10 @@ void PhysicalDesign::addPhysicalSpecialNet(const DefSpecialNetDscp & specialNet)
 					wire.setWidth(segmentDscp.clsRoutedWidth);
 				} // end if
 				routing.addWire(wire);
-			} // end if 
+			} // end if
 		} // end for
 	} // end for
-} // end method 
+} // end method
 
 //// -----------------------------------------------------------------------------
 //
@@ -1011,7 +1015,7 @@ void PhysicalDesign::addPhysicalTracks(const DefTrackDscp &track) {
 			trackLayer.push_back(phTrack);
 		} // end if
 	} // end for
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1021,12 +1025,12 @@ void PhysicalDesign::initRoutingGrid() {
 			if (data->clsMapLayerToRoutingGrid.find(phLayer) == data->clsMapLayerToRoutingGrid.end()) {
 				data->clsPhysicalRoutingGrids.push_back(PhysicalRoutingGrid(new PhysicalRoutingGridData()));
 				data->clsMapLayerToRoutingGrid[phLayer] = data->clsPhysicalRoutingGrids.back();
-			} // end if 
+			} // end if
 			Rsyn::PhysicalRoutingGrid routingGrid = data->clsMapLayerToRoutingGrid[phLayer];
 			routingGrid->clsLayer = phLayer;
 			routingGrid->clsTracks.push_back(track);
-		} // end for 
-	} // end for 
+		} // end for
+	} // end for
 
 	// to use std::sort algorithm, the operator int() const in Proxy must be public. Otherwise, there is a compiler error
 	data->clsPhysicalRoutingGrids.clear();
@@ -1035,7 +1039,7 @@ void PhysicalDesign::initRoutingGrid() {
 			continue;
 		PhysicalRoutingGrid routing = data->clsMapLayerToRoutingGrid[layer];
 		data->clsPhysicalRoutingGrids.push_back(routing);
-	} // end for 
+	} // end for
 
 	Rsyn::PhysicalRoutingGrid bottom;
 	for (Rsyn::PhysicalRoutingGrid routing : allPhysicalRoutingGrids()) {
@@ -1050,8 +1054,8 @@ void PhysicalDesign::initRoutingGrid() {
 				routing->clsSpacing[X] = track->clsSpace;
 			} else {
 				std::cout << "ERROR: Invalid track direction " << track.getDirection() << "\n";
-			} // end if-else 
-		} // end for 
+			} // end if-else
+		} // end for
 		routing->clsBounds[UPPER][X] = routing->clsBounds[LOWER][X] +
 			(routing->clsSpacing[X] * (routing->clsNumTracks[X] - 1));
 		routing->clsBounds[UPPER][Y] = routing->clsBounds[LOWER][Y] +
@@ -1060,8 +1064,8 @@ void PhysicalDesign::initRoutingGrid() {
 		if (bottom != nullptr)
 			bottom->clsTopRoutingGrid = routing;
 		bottom = routing;
-	} // end for 
-} // end method 
+	} // end for
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1071,7 +1075,7 @@ void PhysicalDesign::addPhysicalDesignVia(const DefViaDscp & via) {
 	if (it != data->clsMapPhysicalVias.end()) {
 		std::cout << "WARNING: Via " << via.clsName << " was already defined. Skipping ...\n";
 		return;
-	} // end if 
+	} // end if
 
 	// Adding new via
 	data->clsMapPhysicalVias[via.clsName] = data->clsPhysicalVias.size();
@@ -1109,19 +1113,19 @@ void PhysicalDesign::addPhysicalDesignVia(const DefViaDscp & via) {
 			phVia->clsHasRowCol = true;
 			phVia->clsNumRows = via.clsNumCutRows;
 			phVia->clsNumCols = via.clsNumCutCols;
-		} // end if 
+		} // end if
 		if (via.clsHasOrigin) {
 			phVia->clsHasOrigin = true;
 			phVia->clsOrigin[X] = via.clsXOffsetOrigin;
 			phVia->clsOrigin[Y] = via.clsYOffsetOrigin;
-		} // end if 
+		} // end if
 		if (via.clsHasOffset) {
 			phVia->clsHasOffset = true;
 			phVia->clsOffset[BOTTOM_VIA_LEVEL][X] = via.clsXBottomOffset;
 			phVia->clsOffset[TOP_VIA_LEVEL][Y] = via.clsYBottomOffset;
 			phVia->clsOffset[BOTTOM_VIA_LEVEL][X] = via.clsXTopOffset;
 			phVia->clsOffset[TOP_VIA_LEVEL][Y] = via.clsYTopOffset;
-		} // end if 
+		} // end if
 	} else {
 		phVia->clsHasViaRule = false;
 		phVia->clsType = VIA_GEOMETRY_TYPE;
@@ -1131,7 +1135,7 @@ void PhysicalDesign::addPhysicalDesignVia(const DefViaDscp & via) {
 			Rsyn::PhysicalLayer layer = getPhysicalLayerByName(layerName);
 			// assert(layer);
 			layers.push_back(std::make_tuple(layer.getIndex(), layer.data));
-		} // end for 
+		} // end for
 		std::sort(layers.begin(), layers.end());
 		//	assert(layers.size() == NUM_VIA_LAYERS);
 		for (int i = 0; i < NUM_VIA_LAYERS; i++) {
@@ -1151,10 +1155,10 @@ void PhysicalDesign::addPhysicalDesignVia(const DefViaDscp & via) {
 				bds[LOWER][Y] = doubleRect[LOWER][Y];
 				bds[UPPER][X] = doubleRect[UPPER][X];
 				bds[UPPER][Y] = doubleRect[UPPER][Y];
-			} // end for 
+			} // end for
 		} // end for
-	} // end if-else 
-} // end method 
+	} // end if-else
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1165,7 +1169,7 @@ void PhysicalDesign::addPhysicalSpacing(const LefSpacingDscp & spacing) {
 	phSpacing->clsLayer1 = getPhysicalLayerByName(spacing.clsLayer1);
 	phSpacing->clsLayer2 = getPhysicalLayerByName(spacing.clsLayer2);
 	phSpacing->clsDistance = static_cast<DBU> (std::round(spacing.clsDistance * getDatabaseUnits(LIBRARY_DBU)));
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1176,7 +1180,7 @@ PhysicalDesign::getPhysicalLayerByIndex(const int index) {
 		return PhysicalLayer(nullptr);
 	Element<PhysicalLayerData> * phLayerDataElement = data->clsPhysicalLayers.get(index);
 	return PhysicalLayer(&phLayerDataElement->value);
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1200,9 +1204,9 @@ PhysicalDesign::getPhysicalLayerByIndex(const Rsyn::PhysicalLayerType layerType,
 		default:
 			std::cout << "TODO " << layerType << "\n";
 			return PhysicalLayer(nullptr);
-	} // end switch 
+	} // end switch
 
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1224,10 +1228,10 @@ void PhysicalDesign::updatePhysicalCell(Rsyn::Cell cell) {
 			data->clsTotalAreas[PHYSICAL_FIXED] += area;
 	} else {
 		data->clsTotalAreas[PHYSICAL_MOVABLE] += area;
-	} // end if-else 
+	} // end if-else
 
 	phCell.clsInstance->clsBounds.updatePoints(pos, DBUxy(pos[X] + width, pos[Y] + height));
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1243,8 +1247,8 @@ void PhysicalDesign::removePhysicalCell(Rsyn::Cell cell) {
 			data->clsTotalAreas[PHYSICAL_FIXED] -= area;
 	} else {
 		data->clsTotalAreas[PHYSICAL_MOVABLE] -= area;
-	} // end if-else 
-} // end method 
+	} // end if-else
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1263,7 +1267,7 @@ void PhysicalDesign::mergeBounds(const std::vector<Bounds> & source,
 		stripes.insert(bound[UPPER][dim]);
 		lower[reverse] = std::min(bound[LOWER][reverse], lower[reverse]);
 		upper[reverse] = std::max(bound[UPPER][reverse], upper[reverse]);
-	} // end for 
+	} // end for
 
 	lower[dim] = *stripes.begin();
 	stripes.erase(0);
@@ -1280,9 +1284,9 @@ void PhysicalDesign::mergeBounds(const std::vector<Bounds> & source,
 					merged[UPPER][reverse] = upp;
 					target.push_back(merged);
 					firstMatch = true;
-				} // end if 
+				} // end if
 				continue;
-			} // end if 
+			} // end if
 			if (firstMatch) {
 				low = rect[LOWER][reverse];
 				upp = rect[UPPER][reverse];
@@ -1290,19 +1294,19 @@ void PhysicalDesign::mergeBounds(const std::vector<Bounds> & source,
 			} else {
 				if (upp == rect[LOWER][reverse]) {
 					upp = rect[UPPER][reverse];
-				} // end if 
-			} // end if-else 
-		} // end for 
+				} // end if
+			} // end if-else
+		} // end for
 		if (!firstMatch) {
 			Bounds merged = stripe;
 			merged[LOWER][reverse] = low;
 			merged[UPPER][reverse] = upp;
 			target.push_back(merged);
 			firstMatch = true;
-		} // end if 
+		} // end if
 		lower[dim] = val;
-	} // end for 
-} // end method 
+	} // end for
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1320,8 +1324,8 @@ void PhysicalDesign::initLayerViaManager() {
 		std::vector<PhysicalVia> &topBottom = data->clsLayerViaManager.clsBottomVias[top];
 		topAll.push_back(via);
 		topBottom.push_back(via);
-	} // end for 
-} // end method 
+	} // end for
+} // end method
 
 // -----------------------------------------------------------------------------
 
@@ -1331,11 +1335,11 @@ bool PhysicalDesign::checkEquivalentOrientations(Rsyn::PhysicalSymmetry symmetry
 	std::cout << "TODO " << __func__ << " at " << __FILE__ << "\n";
 	//	if(Rsyn::isPhysicalSymmetryX(symmetry)) {
 	//		return orient1 == Rsyn::ORIENTATION_N ||
-	//	} // end if 
+	//	} // end if
 
 	return false;
-} // end method 
+} // end method
 
 // -----------------------------------------------------------------------------
 
-} // end namespace 
+} // end namespace
