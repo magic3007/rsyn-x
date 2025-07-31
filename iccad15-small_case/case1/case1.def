@@ -1,0 +1,71 @@
+VERSION 5.8 ;
+DIVIDERCHAR "/" ;
+BUSBITCHARS "[]" ;
+DESIGN case1 ;
+UNITS DISTANCE MICRONS 2000 ;
+
+DIEAREA ( 0 0 ) ( 38000 34200 ) ;
+
+ROW coreROW_0 core 0 0 N DO 100 BY 1 STEP 380 0 ;
+ROW coreROW_1 core 0 3420 N DO 100 BY 1 STEP 380 0 ;
+ROW coreROW_2 core 0 6840 N DO 100 BY 1 STEP 380 0 ;
+ROW coreROW_3 core 0 10260 N DO 100 BY 1 STEP 380 0 ;
+ROW coreROW_4 core 0 13680 N DO 100 BY 1 STEP 380 0 ;
+ROW coreROW_5 core 0 17100 N DO 100 BY 1 STEP 380 0 ;
+ROW coreROW_6 core 0 20520 N DO 100 BY 1 STEP 380 0 ;
+ROW coreROW_7 core 0 23940 N DO 100 BY 1 STEP 380 0 ;
+ROW coreROW_8 core 0 27360 N DO 100 BY 1 STEP 380 0 ;
+ROW coreROW_9 core 0 30780 N DO 100 BY 1 STEP 380 0 ;
+
+VIAS 0 ;
+END VIAS
+
+COMPONENTS 5 ;
+   - buf_inv1 INV_X1 
+      + FIXED ( 0 0 ) N ;
+   - buf_inv2 INV_X1 
+      + PLACED ( 36480 0 ) N ;
+   - nand_gate NAND2_X1 
+      + FIXED ( 16720 30780 ) N ;
+   - dff_inst DFF_X80 
+      + FIXED ( 19000 30780 ) N ;
+   - nor_gate NOR2_X1 
+      + FIXED ( 35720 27360 ) N ;
+END COMPONENTS
+
+PINS 5 ;
+   - a + NET a
+      + DIRECTION INPUT
+      + FIXED ( 500 8000 ) N
+      + LAYER metal1 ( 0 0 ) ( 1000 1000 ) ;
+   - b + NET b
+      + DIRECTION INPUT
+      + FIXED ( 500 16000 ) N
+      + LAYER metal1 ( 0 0 ) ( 1000 1000 ) ;
+   - c + NET c
+      + DIRECTION INPUT
+      + FIXED ( 500 24000 ) N
+      + LAYER metal1 ( 0 0 ) ( 1000 1000 ) ;
+   - clk + NET clk
+      + DIRECTION INPUT
+      + FIXED ( 500 32000 ) N
+      + LAYER metal1 ( 0 0 ) ( 1000 1000 ) ;
+   - out + NET out
+      + DIRECTION OUTPUT
+      + FIXED ( 18500 17100 ) N
+      + LAYER metal1 ( 0 0 ) ( 1000 1000 ) ;
+END PINS
+
+NETS 9 ;
+- a ( PIN a ) ( buf_inv1 a ) ;
+- b ( PIN b ) ( nand_gate b ) ;
+- c ( PIN c ) ( nor_gate b ) ;
+- clk ( PIN clk ) ( dff_inst ck ) ;
+- buf_inter ( buf_inv1 o ) ( buf_inv2 a ) ;
+- buf_out ( buf_inv2 o ) ( nand_gate a ) ;
+- nand_out ( nand_gate o ) ( dff_inst d ) ;
+- dff_out ( dff_inst q ) ( nor_gate a ) ;
+- out ( nor_gate o ) ( PIN out ) ;
+END NETS
+
+END DESIGN

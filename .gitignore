@@ -62,3 +62,5 @@ x/misc/iccad2015_evaluate_solution_0831/*.swp
 x/misc/iccad2015_evaluate_solution_0831/*.swo
 x/misc/iccad2015_evaluate_solution_0831/*.swn
 x/misc/iccad2015_evaluate_solution_0831/*.diff
+
+benchmarks/*

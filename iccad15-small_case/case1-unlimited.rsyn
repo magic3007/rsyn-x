@@ -1,0 +1,6 @@
+open "iccad2015" {
+	"config" : "case1/case1.iccad2015",
+	"maxDisplacement" : 10000000,
+	"targetUtilization" : 0.8,
+	"parms" : "ICCAD15.parm"
+};
