@@ -684,12 +684,12 @@ namespace Parsing {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 75,     ///< Last index in yytable_.
-      yynnts_ = 25,  ///< Number of nonterminal symbols.
+      yylast_ = 79,     ///< Last index in yytable_.
+      yynnts_ = 26,  ///< Number of nonterminal symbols.
       yyfinal_ = 5, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
-      yyntokens_ = 19  ///< Number of tokens.
+      yyntokens_ = 20  ///< Number of tokens.
     };
 
 

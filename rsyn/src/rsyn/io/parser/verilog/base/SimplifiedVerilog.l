@@ -62,7 +62,7 @@ wire         { return token::WIRE; }
  /* ************************************************************************ */
  /* Identifiers */
 
-[a-zA-Z_][a-zA-Z0-9$_]* {
+[a-zA-Z_][a-zA-Z0-9$_\[\]]* {
 		yylval->build<std::string>(yytext);
 		return token::IDENTIFIER; 
 	}
@@ -75,7 +75,7 @@ wire         { return token::WIRE; }
  /* ************************************************************************ */
  /* Misc */
 
-[}{;:\[\],()#=.@&!?<>%|^~+*/-] { return yytext[0]; }
+[}{;:\[\],()#=@&!?<>%|^~+\-./] { return yytext[0]; }
 
 [0-9]+ 	{ yylval->build<int>(std::atoi(yytext)); return token::INTEGER; }
 

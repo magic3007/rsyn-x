@@ -72,7 +72,8 @@ io
 
 general_single_identifier
     : IDENTIFIER { $$ = $1; }
-    | IDENTIFIER '[' INTEGER ']' { $$ = $1 + "[" + std::to_string($3) + "]"; }
+    | general_single_identifier '.' IDENTIFIER { $$ = $1 + "." + $3; }
+    | general_single_identifier '/' IDENTIFIER { $$ = $1 + "/" + $3; }
     ;
 
 identifier_list
@@ -110,7 +111,7 @@ net_declaration
 
    
 instance_declaration
-   : IDENTIFIER IDENTIFIER { reader.readInstance($1, $2); } '(' port_mapping ')' ';'
+   : IDENTIFIER general_single_identifier { reader.readInstance($1, $2); } '(' port_mapping ')' ';'
    ;
 
 port_mapping
@@ -134,8 +135,14 @@ named_port_mapping
    ;
    
 connection
-   : '.' IDENTIFIER '(' ')' { reader.readConnection($2, ""); }
-   | '.' IDENTIFIER '(' IDENTIFIER ')' { reader.readConnection($2, $4); }
+   : '.' general_single_identifier '(' ')' { reader.readConnection($2, ""); }
+   | '.' general_single_identifier '(' general_single_identifier ')' { reader.readConnection($2, $4); }
+   | '.' general_single_identifier '(' constant ')' { reader.readConnection($2, ""); }
+   ;
+
+constant
+   : INTEGER
+   | INTEGER CHAR IDENTIFIER
    ;
 
 %%
