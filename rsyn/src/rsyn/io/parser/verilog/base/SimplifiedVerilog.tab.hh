@@ -305,6 +305,7 @@ namespace Parsing {
       char dummy1[sizeof(int)];
 
       // IDENTIFIER
+      // general_single_identifier
       char dummy2[sizeof(std::string)];
 };
 
@@ -683,8 +684,8 @@ namespace Parsing {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 69,     ///< Last index in yytable_.
-      yynnts_ = 23,  ///< Number of nonterminal symbols.
+      yylast_ = 75,     ///< Last index in yytable_.
+      yynnts_ = 25,  ///< Number of nonterminal symbols.
       yyfinal_ = 5, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
@@ -700,7 +701,7 @@ namespace Parsing {
 
 #line 4 "SimplifiedVerilog.yy" // lalr1.cc:377
 } // Parsing
-#line 704 "SimplifiedVerilog.tab.hh" // lalr1.cc:377
+#line 705 "SimplifiedVerilog.tab.hh" // lalr1.cc:377
 
 
 
