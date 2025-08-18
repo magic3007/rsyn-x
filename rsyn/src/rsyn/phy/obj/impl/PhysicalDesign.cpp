@@ -869,6 +869,10 @@ void PhysicalDesign::addPhysicalGroup(const DefGroupDscp& defGroup) {
 
 void PhysicalDesign::addPhysicalNet(const DefNetDscp & netDscp) {
 	Rsyn::Net net = data->clsDesign.findNetByName(netDscp.clsName);
+	if (netDscp.clsName == "VSS" || netDscp.clsName == "VDD") {
+		std::cout << "[AddPhysicalNet] WARNING: Skipping net " << netDscp.clsName << "\n";
+		return;
+	} // end if
 	PhysicalNetData & netData = data->clsPhysicalNets[net];
 	Rsyn::PhysicalRouting & routing = netData.clsRouting;
 	netData.clsNet = net;
