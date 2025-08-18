@@ -68,7 +68,15 @@ void PopulateRsyn::populateRsynLibraryFromLiberty(
 			dscp.addArc(libArc.fromPin, libArc.toPin);
 		} // end for		
 
-		design.createLibraryCell(dscp);
+		Rsyn::LibraryCell lcell = design.findLibraryCellByName(libCell.name);
+
+		if (!lcell) {
+			design.createLibraryCell(dscp);
+		} else {
+			design.updateLibraryCellArcs(lcell, dscp);
+		} // end if
+		
+
 	} // end for	
 } // end method
 

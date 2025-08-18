@@ -132,6 +132,9 @@ public:
 
 	//! @brief Creates a new library cell.
 	LibraryCell createLibraryCell(const CellDescriptor &dscp, const bool ignoreDuplicated = false);
+
+	//! @brief Updates the arcs of a library cell.
+	LibraryCell updateLibraryCellArcs(LibraryCell lcell, const CellDescriptor &dscp);
 	
 	////////////////////////////////////////////////////////////////////////////
 	// Netlist

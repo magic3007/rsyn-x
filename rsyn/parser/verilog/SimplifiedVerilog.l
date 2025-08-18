@@ -62,7 +62,7 @@ wire         { return token::WIRE; }
  /* ************************************************************************ */
  /* Identifiers */
 
-[a-zA-Z_][a-zA-Z0-9$_]* {
+[a-zA-Z_][a-zA-Z0-9$_\[\]]* {
 		yylval->build<std::string>(yytext);
 		return token::IDENTIFIER; 
 	}

@@ -28,6 +28,7 @@
    #include <iostream>
    #include <cstdlib>
    #include <fstream>
+   #include <string>
    
    /* include for all driver functions */
    #include "../SimplifiedVerilogReader.h"
@@ -49,6 +50,8 @@
 %token <std::string> IDENTIFIER
 %token               CHAR
 
+%type <std::string> general_single_identifier
+
 %locations
 
 %%
@@ -67,9 +70,15 @@ io
     : /* empty */
     | '(' identifier_list ')'
 
+general_single_identifier
+    : IDENTIFIER { $$ = $1; }
+    | general_single_identifier '.' IDENTIFIER { $$ = $1 + "." + $3; }
+    | general_single_identifier '/' IDENTIFIER { $$ = $1 + "/" + $3; }
+    ;
+
 identifier_list
-    : IDENTIFIER { reader.readIdentifier($1); }
-    | identifier_list ',' IDENTIFIER { reader.readIdentifier($3); }
+    : general_single_identifier { reader.readIdentifier($1); }
+    | identifier_list ',' general_single_identifier { reader.readIdentifier($3); }
     ;
     
 implementation
@@ -90,19 +99,19 @@ declaration
 
 port_declaration
    : INPUT { reader.setCurrentIdentifierListType(IDENTIFIER_LIST_INPUT_PORT); } identifier_list ';'
-   | INPUT '[' INTEGER ':' INTEGER ']' { reader.setCurrentIdentifierListType(IDENTIFIER_LIST_INPUT_PORT); reader.setBusRange($3, $5); } identifier_list ';'      
+   | INPUT '[' INTEGER ':' INTEGER ']' { reader.setCurrentIdentifierListType(IDENTIFIER_LIST_INPUT_PORT); reader.setBusRange($3, $5); } simple_identifier_list ';'      
    | OUTPUT { reader.setCurrentIdentifierListType(IDENTIFIER_LIST_OUTPUT_PORTS); } identifier_list ';'
-   | OUTPUT '[' INTEGER ':' INTEGER ']' { reader.setCurrentIdentifierListType(IDENTIFIER_LIST_OUTPUT_PORTS); reader.setBusRange($3, $5); } identifier_list ';'
+   | OUTPUT '[' INTEGER ':' INTEGER ']' { reader.setCurrentIdentifierListType(IDENTIFIER_LIST_OUTPUT_PORTS); reader.setBusRange($3, $5); } simple_identifier_list ';'
    ;
 
 net_declaration
    : WIRE { reader.setCurrentIdentifierListType(IDENTIFIER_LIST_NETS); } identifier_list ';'
-   | WIRE '[' INTEGER ':' INTEGER ']'  { reader.setCurrentIdentifierListType(IDENTIFIER_LIST_NETS); reader.setBusRange($3, $5);} identifier_list ';'
+   | WIRE '[' INTEGER ':' INTEGER ']'  { reader.setCurrentIdentifierListType(IDENTIFIER_LIST_NETS); reader.setBusRange($3, $5);} simple_identifier_list ';'
    ;
 
    
 instance_declaration
-   : IDENTIFIER IDENTIFIER { reader.readInstance($1, $2); } '(' port_mapping ')' ';'
+   : IDENTIFIER general_single_identifier { reader.readInstance($1, $2); } '(' port_mapping ')' ';'
    ;
 
 port_mapping
@@ -111,6 +120,11 @@ port_mapping
    | named_port_mapping
    ;
 
+simple_identifier_list
+   : IDENTIFIER { reader.readIdentifier($1); }
+   | simple_identifier_list ',' IDENTIFIER { reader.readIdentifier($3); }
+   ;
+ 
 ordered_port_mapping
    : identifier_list 
    ;
@@ -121,8 +135,14 @@ named_port_mapping
    ;
    
 connection
-   : '.' IDENTIFIER '(' ')' { reader.readConnection($2, ""); }
-   | '.' IDENTIFIER '(' IDENTIFIER ')' { reader.readConnection($2, $4); }
+   : '.' general_single_identifier '(' ')' { reader.readConnection($2, ""); }
+   | '.' general_single_identifier '(' general_single_identifier ')' { reader.readConnection($2, $4); }
+   | '.' general_single_identifier '(' constant ')' { reader.readConnection($2, ""); }
+   ;
+
+constant
+   : INTEGER
+   | INTEGER CHAR IDENTIFIER
    ;
 
 %%

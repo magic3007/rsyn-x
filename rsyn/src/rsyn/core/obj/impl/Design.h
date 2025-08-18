@@ -193,6 +193,31 @@ Design::findPinByName(const std::string &name, const std::string::value_type sep
 
 inline
 LibraryCell 
+Design::updateLibraryCellArcs(
+	LibraryCell lcell,
+	const CellDescriptor &dscp) {
+	const int numArcs = (int) dscp.arcs.size();
+
+	// Initializes library cell's arcs.
+	lcell.data->arcs.resize(numArcs);
+	for (int i = 0; i < numArcs; i++) {	
+		LibraryArcData * larc = &(data->libraryArcs.create()->value); // TODO: awful
+		larc->id = data->libraryArcs.lastId();
+		larc->design = *this;
+		larc->lcell = lcell;
+		larc->index = i;
+		larc->from = lcell.getLibraryPinByName(std::get<0>(dscp.arcs[i]));
+		larc->to = lcell.getLibraryPinByName(std::get<1>(dscp.arcs[i]));
+		lcell.data->arcs[i] = larc;
+	} // end for
+
+	return lcell;
+} // end method
+
+// -----------------------------------------------------------------------------
+
+inline
+LibraryCell 
 Design::createLibraryCell(const CellDescriptor &dscp, const bool ignoreDuplicated) {
 	if (findLibraryCellByName(dscp.getName())) {
 		if (!ignoreDuplicated) {

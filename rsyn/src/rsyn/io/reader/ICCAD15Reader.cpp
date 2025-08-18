@@ -150,10 +150,6 @@ void ICCAD15Reader::openBenchmarkFromICCAD15()  {
 	
 	DBU clsDesignDistanceUnit = (DBU)lefDscp.clsLefUnitsDscp.clsDatabase; // FIXME: should come from LEF
 	
-	Stepwatch watchLibrary("Loading library into Rsyn");
-	Reader::populateRsynLibraryFromLiberty(libInfosEarly, clsDesign);
-	watchLibrary.finish();
-	
 	Stepwatch watchRsyn("Loading design into Rsyn");
 	Reader::populateRsyn(
 		lefDscp,
@@ -161,6 +157,10 @@ void ICCAD15Reader::openBenchmarkFromICCAD15()  {
 		verilogDesignDescriptor,
 		clsDesign);
 	watchRsyn.finish();	
+
+	Stepwatch watchLibrary("Loading library into Rsyn");
+	Reader::populateRsynLibraryFromLiberty(libInfosEarly, clsDesign);
+	watchLibrary.finish();
 
 	//session.startService("rsyn.webLogger", {});
 	

@@ -179,6 +179,11 @@ void SimplifiedVerilogReader::readConnection(const std::string &portName, const 
 	//std::cout << "connection " << portName << " -> " << &netName << "\n";
 	
 	// Add the net if it does not exists.
+	if (netName == "") {
+		// this port is not connected to any net
+		return;
+	} // end if
+
 	bool alreadyExisted;
 	const int netId = createNet(netName, alreadyExisted);
 	if (!alreadyExisted) {
@@ -188,6 +193,7 @@ void SimplifiedVerilogReader::readConnection(const std::string &portName, const 
 	Legacy::Design::Connection connection;
 	connection.pin = portName;
 	connection.instance = clsVerilogDescriptor.components.back().name;
+	// std::cerr << "connection " << connection.instance << ":" << connection.pin << " -> " << netName << "\n";
 	clsVerilogDescriptor.nets[netId].connections.push_back(connection);			
 } // end method
 

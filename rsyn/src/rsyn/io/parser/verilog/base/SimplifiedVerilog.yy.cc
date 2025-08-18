@@ -301,7 +301,7 @@ typedef flex_uint8_t YY_CHAR;
 #define yytext_ptr yytext
 #define YY_INTERACTIVE
 
-#include <FlexLexer.h>
+#include "FlexLexerCopy.h"
 
 int yyFlexLexer::yywrap() { return 1; }
 int yyFlexLexer::yylex()
@@ -404,7 +404,7 @@ static const flex_int16_t yy_def[62] =
 
 static const flex_int16_t yy_nxt[94] =
     {   0,
-        8,    9,   10,   11,    8,    8,   12,   13,   14,   11,
+        8,    9,   10,   11,    8,   11,   12,   13,   14,   11,
        15,   14,   16,   17,   14,   18,   14,   19,   14,   14,
        14,   14,   20,   22,   22,   29,   23,   23,   26,   27,
        21,   21,   21,   24,   24,   24,   30,   56,   30,   55,

@@ -75,7 +75,7 @@ wire         { return token::WIRE; }
  /* ************************************************************************ */
  /* Misc */
 
-[}{;:\[\],()#=@&!?<>%|^~+\-./] { return yytext[0]; }
+[}{;:\[\],()#=.@&!?<>%|^~+*/-] { return yytext[0]; }
 
 [0-9]+ 	{ yylval->build<int>(std::atoi(yytext)); return token::INTEGER; }
 
