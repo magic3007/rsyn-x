@@ -211,8 +211,8 @@ int lefPinCB(lefrCallbackType_e c, lefiPin* pin, lefiUserData ud) {
 	typedef boost::polygon::polygon_90_with_holes_data<double> Polygon90;
 	typedef boost::polygon::polygon_traits<Polygon90>::point_type BoostPoint;
 	// Skip power and ground pins...
-	//if (strcmp(pin->use(), "GROUND") == 0) return 0;
-	//if (strcmp(pin->use(), "POWER") == 0) return 0;
+	if (strcmp(pin->use(), "GROUND") == 0) return 0;
+	if (strcmp(pin->use(), "POWER") == 0) return 0;
 
 	LefDscp & dscp = getLibraryFromUserData(ud);
 	LefMacroDscp & lefMacro = dscp.clsLefMacroDscps.back();
