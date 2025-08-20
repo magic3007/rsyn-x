@@ -149,7 +149,19 @@ void ICCAD15Reader::openBenchmarkFromICCAD15()  {
 	clsModule = clsDesign.getTopModule();
 	
 	DBU clsDesignDistanceUnit = (DBU)lefDscp.clsLefUnitsDscp.clsDatabase; // FIXME: should come from LEF
-	
+
+	// Create library cells.
+	// Some cells (e.g. TIE) only appears in the LEF, not in the Liberty
+	// at least for ICCAD 15 benchmarks. That's why we need to try to create
+	// also cells using LEF.
+	Stepwatch watchLef("Loading library from LEF");
+	populateRsynLibraryFromLef(lefDscp, clsDesign);
+	watchLef.finish();
+
+	Stepwatch watchLibrary("Loading library into Rsyn");
+	Reader::populateRsynLibraryFromLiberty(libInfosEarly, clsDesign);
+	watchLibrary.finish();
+
 	Stepwatch watchRsyn("Loading design into Rsyn");
 	Reader::populateRsyn(
 		lefDscp,
@@ -157,10 +169,6 @@ void ICCAD15Reader::openBenchmarkFromICCAD15()  {
 		verilogDesignDescriptor,
 		clsDesign);
 	watchRsyn.finish();	
-
-	Stepwatch watchLibrary("Loading library into Rsyn");
-	Reader::populateRsynLibraryFromLiberty(libInfosEarly, clsDesign);
-	watchLibrary.finish();
 
 	//session.startService("rsyn.webLogger", {});
 	
