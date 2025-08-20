@@ -766,6 +766,11 @@ void Timer::updateTiming_Net(Rsyn::Net net) {
 	} // end if
 	
 	Rsyn::Pin driver = net.getAnyDriver();
+	if (!driver) {
+		std::cout << "[WARNING] Net " << net.getName() << " has no driver.\n";
+		return;
+	} // end if
+
 	TimingPin &timingPin = getTimingPin(driver);
 	
 	// Effective load capacitance..

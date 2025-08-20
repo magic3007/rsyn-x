@@ -299,6 +299,10 @@ void Writer::writeFullDEF(string filename) {
 	int numPorts = clsModule.getNumPorts(Rsyn::IN) + clsModule.getNumPorts(Rsyn::OUT);
 	def.clsPorts.reserve(numPorts);
 	for (Rsyn::Port port : clsModule.allPorts()) {
+		if (port.getName() == "VSS" || port.getName() == "VDD") {
+			std::cerr << "[writeFullDEF] WARNING: Skipping port " << port.getName() << "\n";
+			continue;
+		} // end if
 		Rsyn::PhysicalPort phPort = clsPhysicalDesign.getPhysicalPort(port);
 		def.clsPorts.push_back(DefPortDscp());
 		DefPortDscp & defPort = def.clsPorts.back();

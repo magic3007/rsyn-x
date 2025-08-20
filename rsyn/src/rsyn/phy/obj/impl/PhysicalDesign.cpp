@@ -919,7 +919,7 @@ void PhysicalDesign::addPhysicalNet(const DefNetDscp & netDscp) {
 void PhysicalDesign::addPhysicalSpecialNet(const DefSpecialNetDscp & specialNet) {
 	Rsyn::Net net = data->clsDesign.findNetByName(specialNet.clsName);
 	if (net == nullptr) {
-		std::cout << "WARNING: Net " << specialNet.clsName << " was not found. Skipping ...\n";
+		std::cout << "[addPhysicalSpecialNet] WARNING: Net " << specialNet.clsName << " was not found. Skipping ...\n";
 		return;
 	} // end if
 	PhysicalNetData & netData = data->clsPhysicalNets[net];

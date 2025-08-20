@@ -728,6 +728,7 @@ void WriterDEF::loadDEFNets(DefDscp & def) {
 	def.clsNets.reserve(numNets);
 	for (Rsyn::Net net : clsModule.allNets()) {
 		if (net.getUse() == Rsyn::GROUND || net.getUse() == Rsyn::POWER) {
+			std::cerr << "[loadDEFNets] WARNING: Skipping net " << net.getName() << "\n";
 			continue;
 		} // end if
 		
