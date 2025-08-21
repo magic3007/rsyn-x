@@ -1,0 +1,9 @@
+open "iccad2015" {
+	"config" : "aes_density0.8/aes.iccad2015",
+	"maxDisplacement" : 100000000,
+	"targetUtilization" : 0.8,
+	"parms" : "ICCAD15.parm"
+};
+
+run "ufrgs.ISPD16Flow" {}
+

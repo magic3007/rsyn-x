@@ -1,0 +1,9 @@
+open "iccad2015" {
+	"config" : "ac97_top_density0.8/ac97_top.iccad2015",
+	"maxDisplacement" : 100000000,
+	"targetUtilization" : 0.8,
+	"parms" : "ICCAD15.parm"
+};
+
+run "ufrgs.ISPD16Flow" {}
+
