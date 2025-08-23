@@ -13,6 +13,9 @@
  * limitations under the License.
  */
  
+#include <set>
+#include <utility>
+
 namespace Rsyn {
 
 struct DesignData {  
@@ -54,6 +57,10 @@ struct DesignData {
 	
 	// Used for some netlist traversing (e.g. update topological ordering)...
 	int sign{0};
+	
+	// Arcs to be ignored during topological sort.
+    std::set<std::pair<Rsyn::Pin, Rsyn::Pin>> brokenArcs;
+    bool brokenArcsLoaded{false};
 	
 	// Observers
 	std::array<std::list<DesignObserver *>, NUM_DESIGN_EVENTS> observers;

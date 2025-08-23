@@ -13,6 +13,10 @@
  * limitations under the License.
  */
  
+#include <fstream>
+#include <sstream>
+#include <cstdlib>
+
 namespace Rsyn {
 	
 inline
@@ -815,9 +819,87 @@ Design::getNumPins() const {
 // Topological Ordering
 ////////////////////////////////////////////////////////////////////////////////
 
+
+inline
+void
+Design::loadTimingArcsToBreak(const std::string& filePath) {
+    if (data->brokenArcsLoaded) {
+        return;
+    }
+
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "ERROR: Could not open file: " << filePath << "\n";
+        return;
+    }
+
+    std::string line;
+    // Skip header
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
+        if (line.empty() || line.find_first_not_of(" \t\n\v\f\r") == std::string::npos) {
+            continue;
+        }
+
+        std::stringstream ss(line);
+        std::string fromPointName;
+        std::string toPointName;
+
+        std::getline(ss, fromPointName, ',');
+        std::getline(ss, toPointName, ',');
+		
+		// Trim whitespace, important for the last column that might have '\r'
+		fromPointName.erase(fromPointName.find_last_not_of(" \n\r\t")+1);
+		toPointName.erase(toPointName.find_last_not_of(" \n\r\t")+1);
+
+        if (fromPointName.empty() || toPointName.empty()) {
+            continue;
+        }
+
+		std::string fromCellName = fromPointName.substr(0, fromPointName.find(":"));
+		std::string fromPinName = fromPointName.substr(fromPointName.find(":") + 1);
+		std::string toCellName = toPointName.substr(0, toPointName.find(":"));
+		std::string toPinName = toPointName.substr(toPointName.find(":") + 1);
+
+        try {
+            Rsyn::Pin fromPin = findPinByName(fromCellName, fromPinName);
+            Rsyn::Pin toPin = findPinByName(toCellName, toPinName);
+
+            if (fromPin && toPin) {
+                data->brokenArcs.insert({fromPin, toPin});
+                std::cout << "[INFO] Breaking arc from " << fromPointName << " to " << toPointName << "\n";
+            }
+        } catch (const Rsyn::Exception& e) {
+            std::cerr << "[WARNING] Could not find pin for arc to break: " << fromPointName << " -> " << toPointName << ". " << e.what() << "\n";
+        }
+    }
+
+    data->brokenArcsLoaded = true;
+} // end method
+
+// -----------------------------------------------------------------------------
+
+inline
+bool
+Design::isArcBroken(Rsyn::Pin from, Rsyn::Pin to) const {
+    if (data->brokenArcs.empty()) {
+        return false;
+    }
+    return data->brokenArcs.count({from, to});
+} // end method
+
+// -----------------------------------------------------------------------------
+
+static std::string cet_loop_file_path = (std::getenv("CET_LOOP_FILE_PATH") != nullptr) ? std::getenv("CET_LOOP_FILE_PATH") : "";
+
 inline
 void
 Design::updateTopologicalIndex(Pin pin) {
+	if (cet_loop_file_path != "" && !data->brokenArcsLoaded){
+		loadTimingArcsToBreak(cet_loop_file_path);
+	}
+
 	// Some checks...
 	static_assert(std::is_integral<TopologicalIndex>::value, "Integer required.");
 	static_assert(std::is_signed<TopologicalIndex>::value, "Signed type required.");
@@ -835,6 +917,7 @@ Design::updateTopologicalIndex(Pin pin) {
 			-std::numeric_limits<TopologicalIndex>::infinity();
 	bool hasLower = false;
 	for (Rsyn::Pin predecessor : pin.allPredecessorPins(true)) {
+		if (isArcBroken(predecessor, pin)) continue;
 		lower = std::max(lower, predecessor.getTopologicalIndex());
 		hasLower = true;
 	} // end for
@@ -844,6 +927,7 @@ Design::updateTopologicalIndex(Pin pin) {
 			+std::numeric_limits<TopologicalIndex>::infinity();
 	bool hasUpper = false;
 	for (Rsyn::Pin successor : pin.allSucessorPins(true)) {
+		if (isArcBroken(pin, successor)) continue;
 		upper = std::min(upper, successor.getTopologicalIndex());
 		hasUpper = true;
 	} // end for
@@ -879,6 +963,7 @@ Design::updateTopologicalIndex(Pin pin) {
 			
 			std::queue<std::tuple<Rsyn::Pin, TopologicalIndex>> open;
 			for (Rsyn::Pin successor : pin.allSucessorPins(true)) {
+				if (isArcBroken(pin, successor)) continue;
 				if (successor->order < right) {
 					open.push(std::make_tuple(successor, pin->order));
 				} // end if
@@ -891,7 +976,8 @@ Design::updateTopologicalIndex(Pin pin) {
 
 				if (current == pin) {
 					// loop detected;
-					std::cout << "WARNING: Loop detected.\n";
+					std::cout << "WARNING: Loop detected. Please check the CET_LOOP_FILE_PATH environment variable.\n";
+					exit(1);
 					continue;
 				} // end if
 				
@@ -915,6 +1001,7 @@ Design::updateTopologicalIndex(Pin pin) {
 				current->order = order;
 				
 				for (Rsyn::Pin successor : current.allSucessorPins(true)) {
+					if (isArcBroken(current, successor)) continue;
 					if (successor->order <= order) {
 						open.push(std::make_tuple(successor, order));
 					} // end if

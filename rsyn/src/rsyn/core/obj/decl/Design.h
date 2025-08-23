@@ -290,6 +290,9 @@ public:
 	//!        related in Rsyn::Library.
 	Range<ListCollection<LibraryCellData, LibraryCell>>
 	allLibraryCells(const bool showDeprecatedMessage = true);
+
+	void loadTimingArcsToBreak(const std::string& filePath);
+    bool isArcBroken(Rsyn::Pin from, Rsyn::Pin to) const;
 }; // end class
 
 ////////////////////////////////////////////////////////////////////////////////

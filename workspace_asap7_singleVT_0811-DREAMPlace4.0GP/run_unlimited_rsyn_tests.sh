@@ -12,8 +12,8 @@ readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pw
 readonly PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 readonly RSYN_EXECUTABLE="$PROJECT_ROOT/build/bin/rsyn"
 # Search directory is the current directory where the script resides.
-readonly ICCAD15_DIR="$SCRIPT_DIR"
-readonly OUTPUT_DIR="$ICCAD15_DIR/unlimited_rsyn_results"
+readonly SCRIPTS_DIR="$SCRIPT_DIR/rsyn_scripts"
+readonly OUTPUT_DIR="$SCRIPT_DIR"
 
 # --- State ---
 declare -i success_count=0
@@ -40,9 +40,9 @@ log "Rsyn executable found."
 log "Creating output directory at '$OUTPUT_DIR'..."
 mkdir -p "$OUTPUT_DIR"
 
-log "Searching for '*-unlimited.rsyn' files in '$ICCAD15_DIR'..."
+log "Searching for '*-unlimited.rsyn' files in '$SCRIPTS_DIR'..."
 # Using find and process substitution for safer file handling
-mapfile -d '' rsyn_scripts < <(find "$ICCAD15_DIR" -maxdepth 1 -type f -name "*-unlimited.rsyn" -print0)
+mapfile -d '' rsyn_scripts < <(find "$SCRIPTS_DIR" -maxdepth 1 -type f -name "*-unlimited.rsyn" -print0)
 for rsyn_script in "${rsyn_scripts[@]}"; do
     filename=$(basename "$rsyn_script")
     output_log="$OUTPUT_DIR/${filename}.log"

@@ -3,6 +3,7 @@ import subprocess
 import datetime
 import sys
 from pathlib import Path
+import re
 
 def get_git_short_hash(repo_path):
     """Gets the short git hash of the repository."""
@@ -84,6 +85,23 @@ def main():
         case_output_dir.mkdir(exist_ok=True)
         output_log = case_output_dir / "run.log"
 
+        # Check for CET_LOOP_FILE_PATH in the rsyn script and set env var if present.
+        run_env = os.environ.copy()
+        try:
+            content = rsyn_script.read_text()
+            match = re.search(r'"cet_loop_file_path"\s*:\s*"(.+?)"', content)
+            if match:
+                cet_loop_file_path = match.group(1)
+                # The path in the rsyn script is relative to the script_dir
+                full_cet_path = script_dir / cet_loop_file_path
+                if full_cet_path.is_file():
+                    run_env['CET_LOOP_FILE_PATH'] = str(full_cet_path)
+                    log(f"  Found and set CET_LOOP_FILE_PATH='{full_cet_path}'")
+                else:
+                    log(f"  WARNING: cet_loop_file_path specified, but file not found at '{full_cet_path}'")
+        except Exception as e:
+            log(f"  Error reading or parsing rsyn script {rsyn_script.name}: {e}")
+
         # This command is equivalent to [mode #2] in the original shell script.
         command = [
             "stdbuf", "-o0", "gdb", "--batch", "-ex", "run", "-ex", "bt", "--args",
@@ -96,7 +114,8 @@ def main():
                 result = subprocess.run(
                     command,
                     stdout=f,
-                    stderr=subprocess.STDOUT
+                    stderr=subprocess.STDOUT,
+                    env=run_env
                 )
 
             if result.returncode == 0:
