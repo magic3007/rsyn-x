@@ -221,6 +221,10 @@ void LoadOptimization::runMoveNonCriticalSinksOfCriticalNetsToDriver(const bool 
 			
 			if (!isCritical) {
 				Rsyn::PhysicalCell phCellDriver = phDesign.getPhysicalCell(driver);
+				if (!phCellDriver) {
+					std::cout << "[WARNING] Physical cell not found for driver " << driver.getName() << std::endl;
+					continue;
+				} // end if
 				const DBUxy lowerDriverPos = phCellDriver.getPosition();
 
 				const double dx = lowerDriverPos[X] - lowerCellPos[X];
