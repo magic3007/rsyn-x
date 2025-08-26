@@ -1,0 +1,8 @@
+open "iccad2015" {
+	"config" : "i2c_master_top/pnr/build/i2c_master_top/bookshelf/i2c_master_top.iccad2015",
+	"maxDisplacement" : 100000000,
+	"targetUtilization" : 0.6,
+	"parms" : "ICCAD15.parm"
+};
+
+run "ufrgs.ISPD16Flow" {}

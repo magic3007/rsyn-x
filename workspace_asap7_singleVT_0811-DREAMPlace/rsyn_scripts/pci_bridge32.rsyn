@@ -1,0 +1,8 @@
+open "iccad2015" {
+	"config" : "pci_bridge32/pnr/build/pci_bridge32/bookshelf/pci_bridge32.iccad2015",
+	"maxDisplacement" : 100000000,
+	"targetUtilization" : 0.6,
+	"parms" : "ICCAD15.parm"
+};
+
+run "ufrgs.ISPD16Flow" {}

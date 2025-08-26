@@ -1,0 +1,8 @@
+open "iccad2015" {
+	"config" : "des3/pnr/build/des3/bookshelf/des3.iccad2015",
+	"maxDisplacement" : 100000000,
+	"targetUtilization" : 0.6,
+	"parms" : "ICCAD15.parm"
+};
+
+run "ufrgs.ISPD16Flow" {}
